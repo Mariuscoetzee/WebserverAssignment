@@ -1,0 +1,558 @@
+<html>
+	<head>
+		<title>HTTP assignment</title>
+		<meta http-equiv="Content-Language" content="en-us">
+		<meta name="GENERATOR" content="Microsoft FrontPage 6.0">
+		<meta name="ProgId" content="FrontPage.Editor.Document">
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+		<style>
+<!--
+div.WordSection1
+	{page:WordSection1;}
+-->
+</style>
+
+	</head>
+	<body>
+		<h1>Assignment: Program your own HTTP server</h1>
+		<p>This exercise is part of the exam curriculum for the courses</p>
+		<ul>
+          <li>Software Architecture and Distributed Programs alias Programming 
+			alias SODP</li>
+          <li>Computer Networks and Distributed Systems alias Networking alias 
+			CODS</li>
+
+        </ul>
+		<h2>Introduction</h2>
+		<p>In this assignment you are supposed to program you own HTTP server, also known 
+			as a web server.</p>
+		<p>Your will implement an HTTP server which implements a downscaled version of the 
+			original HTTP/1.0 protocol 
+		<a href="http://www.faqs.org/rfcs/rfc1945.html">
+		http://www.faqs.org/rfcs/rfc1945.html</a>
+		</p>
+		<p>However, your HTTP server will (although simple) work with ordinary browsers 
+			like Internet Explorer, Mozilla Firefox, Opera, etc.</p>
+
+		<p>The assignment is divided into a number of small steps. It is important that you 
+			try to complete step <i>N</i> before proceeding to step <i>N</i> + 1.</p>
+		<h3>Groups</h3>
+		<p>This assignment must be solved in groups: 2-(3) students / group.</p>
+		<h3>Deliverables</h3>
+
+		<ul>
+          <li>ZIP with your NetBeans project. Must include tests and JavaDoc 
+          HTML pages. We accept only ZIP, not RAR!</li>
+			<li>No Word processing documents, please!</li>
+        </ul>
+		<p>Must be mailed to your PROG + NET teachers.<br>
+		Please write who made the work, i.e. who was in the 
+        group.
+		</p>
+		<h2>Testing and documentation</h2>
+
+		<p>All code must be properly tested using JUnit. You are free to write the test 
+			before or after the code. However, it is important that you write the test code 
+			while writing the "real" code.</p>
+		<p>All code must be properly documented with Javadoc comments. Use NetBeans to help 
+			you make comments.</p>
+		<h2>Version control</h2>
+		<p>You must use <i>Git</i> with a remote repository for version control.</p>
+		<p>The repository can be hosted on GitHub <a href="https://github.com/">
+
+		https://github.com/</a> or elsewhere.</p>
+		<!--h2>Debugging tools: Ethereal</h2>
+		<p>For debugging you may use Ethereal to monitor HTTP request and 
+		responses [Kurose &amp; Ross: Computer Networking, page 
+			69-70] <a href="http://www.ethereal.com/">http://www.ethereal.com/</a>
+		</p>
+		<p>Monitor HTTP request and replies from an ordinary browser to different web 
+			servers - just to become familiar with Ethereal.</p>-->
+		<h2>Single threaded server doing GET</h2>
+		<p>The first version of your HTTP server will be a very simple single threaded 
+		server: There will only 
+			be one thread taking care of everything:</p>
+		<ul>
+			<li>
+
+			accepting request
+			<li>
+			handling requests
+			<li>
+				sending responses</li>
+		</ul>
+		<p>The server must listen on some port like 80, 8080, 8888 or the like.</p>
+		<p>This first version of the HTTP server is for the server-part similar to the EchoServer 
+            (the do-work part is different -&gt; remember the accapting request, handling 
+            request and sending responses)<br />
+
+            see exercise SimpleServer1:
+            <a href="http://laerer.rhs.dk/peterl/2012e-cods-int/exercises/SimpleServers1.htm">
+            http://laerer.rhs.dk/peterl/2012e-cods-int/exercises/SimpleServers1.htm</a>
+            <br />
+            including a solution
+            <a href="http://laerer.rhs.dk/peterl/2012e-cods-int/exercises/SimpleServers-solution.zip">
+            http://laerer.rhs.dk/peterl/2012e-cods-int/exercises/SimpleServers-solution.zip</a> 
+            .</p>
+		<p>Useful Java classes</p>
+
+		<ul>
+			<li>
+				java.net.ServerSocket 
+				<a href="http://download.oracle.com/javase/7/docs/api/java/net/ServerSocket.html">
+				http://download.oracle.com/javase/7/docs/api/java/net/ServerSocket.html</a> &nbsp;
+			<li>
+				java.net.Socke
+				<a href="http://download.oracle.com/javase/7/docs/api/java/net/Socket.html">
+				http://download.oracle.com/javase/7/docs/api/java/net/Socket.html</a>
+
+			<li>
+				java.lang.Scanner, specially the methods <code>
+                nextLine</code> 
+				<a href="http://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html#nextLine()">
+				http://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html#nextLine()</a>&nbsp;
+			<li>
+				java.io.PrintWriter, specially the methods <code>
+
+                print</code> 
+				<a href="http://docs.oracle.com/javase/7/docs/api/java/io/PrintWriter.html#print(java.lang.String)">
+				http://docs.oracle.com/javase/7/docs/api/java/io/PrintWriter.html#print(java.lang.String)</a>&nbsp;
+			<li>
+				java.lang.String, specially the method <code>split</code> 
+				<a href="http://download.oracle.com/javase/7/docs/api/java/lang/String.html#split(java.lang.String)">http://download.oracle.com/javase/7/docs/api/java/lang/String.html#split(java.lang.String)</a>
+				
+			</li>
+
+			<li>
+				java.io.FileInputStream, to open an input stream from a file on 
+				your harddisk
+				<a href="http://download.oracle.com/javase/7/docs/api/java/io/FileInputStream.html">
+				http://download.oracle.com/javase/7/docs/api/java/io/FileInputStream.html</a>&nbsp;
+			</li>
+		</ul>
+		<h3>Copying file contents</h3>
+<p>In the web server you need to be able to copy the contents of a file to a 
+socket. This small fragment might be useful</p>
+
+<p>
+<pre>    private static void copy(final InputStream input, final OutputStream output) throws IOException {
+        final byte[] buffer = new byte[1024];
+        while (true) {
+            int bytesRead = input.read(buffer);
+            if (bytesRead == -1) { break; }
+            output.write(buffer, 0, bytesRead);
+        }
+    }</pre>   </p>
+		<h2>Root catalog</h2>
+		<p>An HTTP server needs a root catalog.
+		</p>
+		<p>Some examples</p>
+		<ul>
+			<li>
+
+				When you request a file like <a href="http://www.someserver.com/file.html">http://www.someserver.com/file.html</a>
+			the file is found in rootCatalog/file.html
+			<li>
+				When you request a file like <a href="http://www.someserver.com/directory/file.html">
+					http://www.someserver.com/directory/file.html</a> is found in 
+				rootCatalog/directory/file.html</li>
+		</ul>
+
+		<p>Declare your root catalog like
+		</p>
+		<pre>private static final String ROOT_CATALOG = "C:/someDirectory"</pre>
+		<ul>
+			<li>If you program using a laptop then use a local drive like C:/someDirectory</li>
+			<li>If you program using one of the schools computers use your 
+			network drive H:&nbsp; Don't use a local directory like <code>C:</code>, 
+        since the contents of a local directory will change if you change 
+        computer.</li>
+
+		</ul>
+		<h2>Unit testing the server using JUnit</h2>
+		<p>You should unit test your server (and its individual parts) before 
+        and after <i>each</i> of the steps in this exercise.</p>
+		<p>Since this is the first time you test the server, you'll get a little 
+        guidance. The test creates a little HTTP client</p>
+		<ol>
+          <li>Opens a client socket, connecting to the server.</li>
+
+          <li>Sends a legal HTTP request, for a file which exists on the web 
+          server</li>
+          <li>Reads the HTTP response</li>
+          <li>Make assertions on the parts of the response.</li>
+        </ol>
+		<p><a href="WebServerTest.zip">WebServerTest.java</a> (Zip'ed Java file) 
+		This test is quite hard! It tests a lot of features that your web-server 
+		probably does not have at the moment. Don't expect the test to be 
+		all-green - expect more red than green!</p>
+		<p>If you don't like the test to be red, you may make some of the test 
+		cases into comments.</p>
+
+		<h2><a name="cleaning"></a>Cleaning your code</h2>
+		<p>Now it's time to clean your code:</p>
+		<ol>
+			<li>Remove empty lines</li>
+			<li>Remove lines made into comments, like // ....</li>
+			<li>Run PMD</li>
+
+			<li>Write some JavaDoc comments for your public methods, etc.</li>
+		</ol>
+		
+		<h2>Multi threaded server</h2>
+		<p>The next version of your HTTP server will spin off multiple threads: One request 
+			generates one new thread.</p>
+		<p>Make the new thread class implement Runnable (don't extend Thread).</p>
+		<p>The server still accepts request and then creates a new thread to handle the 
+			request and send the response.</p>
+
+		<p>Advantages: If one client is slow in sending the request it does not block other 
+			clients.</p>
+		<p>Useful Java classes and interfaces:</p>
+		<ul>
+			<li>
+				java.lang.Runnable 
+				<a href="http://download.oracle.com/javase/7/docs/api/java/lang/Runnable.html">
+				http://download.oracle.com/javase/7/docs/api/java/lang/Runnable.html</a>&nbsp;
+			<li>
+
+				java.lang.Thread 
+				<a href="http://download.oracle.com/javase/7/docs/api/java/lang/Thread.html">
+				http://download.oracle.com/javase/7/docs/api/java/lang/Thread.html</a>&nbsp;
+			</li>
+		</ul>
+		<p>Run the unit test to see that the server still works. VERY IMPORTANT!</p>
+		<h3>Thread pool</h3>
+		<p>To make the performance of the server better you could implement a pool of 
+			threads. Until now you have created a new thread for each new user (client), 
+			but it cost a lot of time and resources for the Operating System&nbsp;(i.e. the 
+			java virtual machine) to create new threads and again free resources from 
+			unused threads. So to make a better performance you could reuse the threads by 
+			creating a pool of threads instead:</p>
+
+		<UL>
+			<LI>
+				ExecutorService pool =
+				<a href="http://java.sun.com/javase/7/docs/api/java/util/concurrent/Executors.html">
+				java.util.concurrent.Executors</a>.newCachedThreadPool()</LI></UL>
+		<h2>Cleaning, again</h2>
+		<p>Do the <a href="#cleaning">cleaning</a> again</p>
+
+        <h2>Logging</h2>
+		<p>The next step is to apply logging to your HTTP server. You should log any event 
+			in the life of the server</p>
+		<ul>
+			<li>
+			server start up
+			<li>
+			request from client
+			<li>
+
+			response to client
+			<li>
+				server shut down</li>
+		</ul>
+		<p>Use the Java Logging API in the package java.util.logging
+		<a href="http://download.oracle.com/javase/7/docs/api/java/util/logging/package-summary.html">
+		http://download.oracle.com/javase/7/docs/api/java/util/logging/package-summary.html</a>
+		</p>
+		<p>If you are not familiar with the Logging API (which you probably 
+        aren't) you should make a separate file (with a main) where you try / 
+        experiment with the Logging API. When you have finished the experiments 
+        you can incorporate the knowledge you gained from the experiments into 
+        your server.</p>
+
+        <h2>Refactoring: Handling + Response in separate class</h2>
+		<p>Before you go on to make the next version of your HTTP server we suggest a 
+			refactoring.</p>
+		<p>Put the code that reads respectively handles the request and sends response in separate class.</p>
+		<p>Don't forget to <b>test</b> you server before and  after the refactoring.</p>
+
+        <h2>Content types</h2>
+
+		<p>All browsers can show plain HTML files, but most browsers can show other kinds 
+			of files as well. Examples: GIF and JPEG files.</p>
+		<p>Some browsers can call external viewers like Adobe Acrobat Readers for PDF 
+			files.</p>
+		<p>If the browser does not about the file type it will show a "Where to save this 
+			file" dialog.</p>
+		<p>The server must inform the client (in the HTTP response) about the content type 
+			to make all this work. Content-Type is a header in the HTTP response. <a href="http://www.faqs.org/rfcs/rfc1945.html">
+				http://www.faqs.org/rfcs/rfc1945.html</a> section 10.5</p>
+
+		<p>The content type can be inferred from the extension of the file name. Some 
+			examples</p>
+		<div align="center">
+			<center>
+				<table border="0" cellpadding="0" cellspacing="0" style="BORDER-COLLAPSE: collapse" bordercolor="#111111" id="AutoNumber1">
+					<tr>
+						<td width="50%" height="19"><b>Filename extension&nbsp; </b>
+						</td>
+
+						<td width="50%" height="19"><b>Content type</b></td>
+					</tr>
+					<tr>
+						<td width="50%" height="19">html</td>
+						<td width="50%" height="19">text/html</td>
+					</tr>
+					<tr>
+
+						<td width="50%" height="19">htm</td>
+						<td width="50%" height="19">text/html</td>
+					</tr>
+					<tr>
+						<td width="50%" height="19">doc</td>
+						<td width="50%" height="19">application/msword</td>
+					</tr>
+
+					<tr>
+						<td width="50%" height="19">gif</td>
+						<td width="50%" height="19">image/gif</td>
+					</tr>
+					<tr>
+						<td width="50%" height="19">jpg</td>
+						<td width="50%" height="19">image/jpeg</td>
+
+					</tr>
+					<tr>
+						<td width="50%" height="19">pdf</td>
+						<td width="50%" height="19">application/pdf</td>
+					</tr>
+					<tr>
+						<td width="50%" height="20">css</td>
+
+						<td width="50%" height="20">text/css</td>
+					</tr>
+					<tr>
+						<td width="50%" height="19">xml</td>
+						<td width="50%" height="19">text/xml</td>
+					</tr>
+					<tr>
+
+						<td width="50%" height="19">jar</td>
+						<td width="50%" height="19">application/x-java-archive</td>
+					</tr>
+					<tr>
+						<td width="50%" height="19">&nbsp;</td>
+						<td width="50%" height="19">&nbsp;</td>
+					</tr>
+				</table>
+
+			</center>
+		</div>
+		<p>The default content type is <b>application/octet-stream</b>. Use it 
+		if no other content types are applicable, i.e. if you have a filename 
+		without extension or with an &quot;unknown&quot; extension.</p>
+		<p>More content types (sometimes called media types) can be found on <a href="http://www.iana.org/assignments/media-types/">
+				http://www.iana.org/assignments/media-types/</a>
+
+		</p>
+		<div class="WordSection1">
+			<span lang="EN-US">You can now choose either to utilize the Java 
+			API:
+			<a href="http://download.oracle.com/javase/7/docs/api/javax/activation/MimetypesFileTypeMap.html">
+			http://download.oracle.com/javase/7/docs/api/javax/activation/MimetypesFileTypeMap.html</a>&nbsp;
+			To make this work copy this MIME types file <a href="mime.types.txt">
+			mime.types.txt</a> to your home directorys (<a href="file:///c:/users/andersb%20on%20my%20computer">c:\users\andersb on my 
+			computer</a>). The file must be renames to .mime.types (note the TWO 
+			dots)</span><p><span lang="EN-US">Or alternatively do the programming 
+			yourself using the Java API:</span></div>
+
+		<ul>
+          <li>
+                    java.util.Map&lt;String, String&gt;
+					<a href="http://download.oracle.com/javase/7/docs/api/java/util/Map.html">
+					http://download.oracle.com/javase/7/docs/api/java/util/Map.html</a> &nbsp; </li>
+          <li>
+
+                java.util.HashMap&lt;String, String&gt;
+				<a href="http://download.oracle.com/javase/7/docs/api/java/util/HashMap.html">
+				http://download.oracle.com/javase/7/docs/api/java/util/HashMap.html</a>&nbsp; </li>
+        </ul>
+		<p>If you are not familiar with Map and HashMap make a separate to 
+        experiment with Map and HashMap. Try to make a method like</p>
+        <pre>public static String getContentType(String filename)</pre>
+
+        <p>in your experiment file. When it works you can copy the method to 
+        your server.</p>
+		<p>Check the response status code with JUnit, i.e. let JUnit act as an HTTP client.
+		</p>
+		<h2>Proper status codes and reason phrase</h2>
+		<p>The HTTP client (browser) needs to be informed about the status of the HTTP 
+			response. This is done using the status response header.</p>
+		<p><a href="http://www.faqs.org/rfcs/rfc1945.html"> http://www.faqs.org/rfcs/rfc1945.html</a>
+			section 6.1 shows the status response headers.</p>
+
+		<p>Check the response status codes with JUnit, i.e. let JUnit act as an HTTP 
+			client.</p>
+		<h2>Graceful shutdown</h2>
+		<p>Until now we've shutdown the HTTP server by issuing Ctrl-C in the console window 
+			running the server. That not a very nice way to end a program, specially not if 
+			the program needs to do some clean-up before closing.</p>
+		<p>Ideas for graceful shutdown</p>
+		<ol>
+			<li>
+			Make the HTTP server spin of another thread (the stopping thread). This thread 
+			makes a server socket listening on some port (the shutdown port).
+			<li>
+
+				When another process connects to this port the  stopping thread calls some 
+				method on the server thread to inform the server thread that it is time to shut 
+				down.</li>
+		</ol>
+		<p>When you want to shutdown your HTTP server you start another program (a shutdown 
+			client). This program connects to the shutdown port.</p>
+		<p>To make the server stop while it is waiting on accept() you must set the server 
+			socket to timeout after a certain period of time 
+		<a href="http://download.oracle.com/javase/7/docs/api/java/net/ServerSocket.html#setSoTimeout(int)">
+		http://download.oracle.com/javase/7/docs/api/java/net/ServerSocket.html#setSoTimeout(int)</a>&nbsp; 
+			The SocketException must be caught inside the server loop.</p>
+		<p>Useful Java API</p>
+
+		<ul>
+			<li>java.util.concurrent.AtomicBoolean
+			<a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/atomic/AtomicBoolean.html">
+			http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/atomic/AtomicBoolean.html</a> 
+			</li>
+		</ul>
+		
+        <h2>Refactoring: Mapping input into an object and mapping an object to output</h2>
+		<p>Next step in the refactoring is to let the reading from an input stream build and 
+            initilize an HTTP-Request object and then use this 
+            object for the further handling in the server.<br />
+
+            You should also save information for the output in a HTTP-Response object. 
+            Information needed for sending response-lines back to the client (Browser) are 
+            then obtained from the object.</p>
+        <p>Refactor your system to have Accepting Request, Handling Request and Sending 
+            Responses in seperate classes (e.g. ReadingRequest, HandlingRequest, 
+            SendingResponse)</p>
+        <p>Put the code for reading the request (i.e. read a request and build the information 
+            into an HTTP-Request object) in the ReadingRequest-class&nbsp; and sends response (i.e. retrieve information for 
+            the response from an HTTP-Response object) in the SendingResponse-class.</p>
+        <p>
+            <img alt="Object-mapping" src="HTTPserver-figa.gif" 
+                style="width: 700px" />
+           </p>
+
+		<p>Don't forget to <b>test</b> you server before and  after the refactoring.</p>
+
+        
+        <h2>URL encoding and decoding</h2>
+		<p>URL's need encoding and decoding, since lot of characters are not allowed in 
+			URL's: space, æ, ø, å, etc.</p>
+		<p>Example (from a Google search for "Anders Børjesson")</p>
+		<ul>
+
+			<li>
+			http://www.google.dk/search?q=Anders+B%C3%B8rjesson&amp;sourceid=mozilla-search&amp;start=0&amp;start=0&amp;ie=utf-8&amp;oe=utf-8&amp;client=firefox-a&amp;rls=org.mozilla:en-US:official
+			<li>
+			spaces are encoded as +
+			<li>
+				ø is encodes as %C3%</li>
+
+		</ul>
+		<p>A client (like a browser) automatically encodes the URL before sending it. When 
+			your server receives an URL it must be decoded.</p>
+		<p>Useful Java API</p>
+		<ul>
+			<li>
+				java.netURLDecoder 
+				<a href="http://download.oracle.com/javase/7/docs/api/java/net/URLDecoder.html">
+				http://download.oracle.com/javase/7/docs/api/java/net/URLDecoder.html</a>&nbsp;
+
+			<li>
+				java.netURLEncoder 
+				<a href="http://download.oracle.com/javase/7/docs/api/java/net/URLEncoder.html">
+				http://download.oracle.com/javase/7/docs/api/java/net/URLEncoder.html</a>&nbsp;
+			</li>
+		</ul>
+		<H2>Configuration file</H2>
+		<P>To make the application more easy to setup you need a configuration 
+			file.&nbsp;This will make it more easy&nbsp;to move the application from one 
+			computer to another and to make it more easy to change the&nbsp;configuration 
+			of the application ie. you do not have to change the code and recompile it.</P>
+
+		<P>The configuration file could contain following information:</P>
+		<UL>
+			<LI>
+			Server port
+			<LI>
+			Root catalog
+			<LI>
+			Shutdown port
+			<LI>
+			Default content type
+			<LI>
+
+			The default logging level
+			<LI>
+			Show catalog content (if no welcome file)
+			<LI>
+				Welcome files (filenames) - see some of the next step</LI>
+		</UL>
+		<p>Useful Java API</p>
+        <ul>
+          <li>
+
+          java.util.Properties
+          <a href="http://download.oracle.com/javase/7/docs/api/java/util/Properties.html">
+			http://download.oracle.com/javase/7/docs/api/java/util/Properties.html</a> &nbsp;
+          </li>
+        </ul>
+		<p>Again, make experiments before you start to use Properties in your 
+        server.</p>
+        <p>NetBeans can help you make a properties file: New
+        <font face="Times New Roman">&#8594; Other &#8594;&nbsp; Properties file</font></p>
+
+		<h2>Welcome files</h2>
+		<P>If a client send a request to the server without telling which files to get, the 
+			server normally send back a welcome file (normally the file named '<FONT face="Courier New">index.html</FONT>').
+		</P>
+		<P>The server should&nbsp;implement that it support this function, e.g.&nbsp;have a 
+			default filename if no filename are in the request. Or more advanced a sequence 
+			of files it try to use if no files are in the request. E.g. first try <FONT face="Courier New">
+				index.html</FONT> then&nbsp;<FONT face="Courier New">index.htm</FONT> and 
+			then <FONT face="Courier New">index.jsp</FONT> &nbsp;</P>
+
+		<h2>Show catalog contents</h2>
+		<p>If a client send a request to a folder with no filename and with no welcome 
+			files, the server should response with the contents of the catalog including a 
+			Hyperlink&nbsp;to the files in the catalog, so the user just need to click on link to get the file.</p>
+		<P>A reference on how to make HTML links
+        <a href="http://www.w3schools.com/html/html_links.asp">
+        http://www.w3schools.com/html/html_links.asp</a> </P>
+		<P>Useful Java API</P>
+
+		<UL>
+			<LI>
+				java.io.File
+				<a href="http://download.oracle.com/javase/7/docs/api/java/io/File.html">
+				http://download.oracle.com/javase/7/docs/api/java/io/File.html</a> &nbsp;
+			</LI>
+		</UL>
+		<h2>Other methods than GET</h2>
+
+		<P>In the HTTP protocol you are able to use the Methods GET, PUT, POST, HEAD and 
+			some more. You have already implement the GET Method. Look in the description 
+			of the HTTP (the RFC <a href="http://www.faqs.org/rfcs/rfc1945.html">
+		http://www.faqs.org/rfcs/rfc1945.html</a>)&nbsp;and see how the requests PUT, POST and HEAD are specified and 
+			implement these.&nbsp;</P>
+		<h2>Content types in a separate configuration file</h2>
+		<P>In the current version the connection between filename extensions and 
+        content types are &quot;hard coded&quot; in you program text. Move the (extension, 
+        content type)-table to a text file - and read that text file when you 
+        startup the server.&nbsp; </P>
+
+		<h2>Framework for reuse</h2>
+		<p>To make use of your code in the future you should refactor your server-code.</p>
+		<P>The idea is that all what is general are separated in an interface e.g. Server 
+			which have been implemented in an abstract class e.g. AbstractServer. Then your 
+			HTTP-server could extend the AbstractServer-class and minimize its own code 
+			because some of the work are already coded in the AbstractServer class. If you 
+			now are to implement new servers it will be much easier - and you will later 
+			this autumn.&nbsp;</P>
+		<p align="center">
+        <img border="0" src="serverFrameworkClassDiagram.jpg" width="709" height="356"></p>
+		</body>
+</html>
