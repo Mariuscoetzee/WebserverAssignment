@@ -60,19 +60,19 @@ public class WebServerTest {
     client.close();
   }
 
-//  @Test
-//  public void testMissingProtocol() throws IOException {
-//    final Socket client = new Socket("localhost", WebServer.SERVER_PORT);
-//
-//    final OutputStream output = client.getOutputStream();
-//    output.write(("GET /doesNotExist.html HTTP 1.0" + CRLF + CRLF).getBytes());
-//    output.flush();
-//
-//    final BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-//    final String statusLine = input.readLine();
-//    assertEquals("HTTP/1.0 400 Illegal protocol: HTTP 1.0", statusLine);
-//    client.close();
-//  }
+  @Test
+  public void testMissingProtocol() throws IOException {
+    final Socket client = new Socket("localhost", WebServer.SERVER_PORT);
+
+    final OutputStream output = client.getOutputStream();
+    output.write(("GET /doesNotExist.html HTTP 1.0" + CRLF + CRLF).getBytes());
+    output.flush();
+
+    final BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
+    final String statusLine = input.readLine();
+    assertEquals("HTTP/1.0 400 Illegal protocol: HTTP 1.0", statusLine);
+    client.close();
+  }
 
   @Test
   public void testNotImplemented() throws IOException {
